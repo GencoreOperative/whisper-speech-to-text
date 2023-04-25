@@ -1,0 +1,3 @@
+#!/bin/bash
+# a bash script that invokes the utility
+docker run -v "$PWD:/audio" --rm -ti gencore/whisper-speech-to-text:latest $1

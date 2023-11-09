@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# A script to extract the audio from a provided media file and create
+# an audio transcript of the text.
+
+INPUT=$1
+[ ! -f "$INPUT" ] && echo "Provide an input audio/video file" && exit 1
+
+# Extract the audio from the video so Whisper can listen to it
+AUDIO=audio.mp3
+if [ ! -f $AUDIO ]; then
+	# Create the file first to avoid issues with root permissions from Docker images
+	touch $AUDIO
+	docker run --rm -it -v "$(pwd)":/data linuxserver/ffmpeg \
+		-y \
+		-i /data/"$INPUT" \
+		-ar 44100 \
+		-filter:a dynaudnorm \
+		/data/$AUDIO
+fi
+
+TEXT=audio.txt
+if [ ! -f "$TEXT" ]; then
+	# Create the file first to avoid issues with root permissions from Docker images
+	touch $TEXT
+	touch audio.vtt
+	touch audio.tsv
+	touch audio.srt
+	touch audio.json
+
+	# Invoke the transcribe feature
+	docker run -v "$PWD:/audio" --rm -ti gencore/whisper-speech-to-text:latest \
+		"$AUDIO"
+
+	# Cleanup the unneeded files
+	rm audio.vtt
+	rm audio.tsv
+	rm audio.srt
+	rm audio.json	
+fi

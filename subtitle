@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# A script to both convert a given video file into an MP4 and add subtitles.
+# The script is designed to be idempotent such that if it gets interrupted, it
+# can be run again and continue.
+
+INPUT=$1
+
+# Convert to MP4 container with h264 encoded video with standard profile and AAC audio
+[ ! -f "video.mp4" ] && docker run --rm -it -v "$(pwd)":/data linuxserver/ffmpeg -i "/data/$INPUT" -c:v libx264 -profile:v high -crf 22 -strict experimental -c:a aac -q:a 6 -filter:a dynaudnorm "/data/video.mp4"
+
+# Extract the audio from the video so Whisper can listen to it
+[ ! -f "video.mp3" ] && docker run --rm -it -v "$(pwd)":/data linuxserver/ffmpeg -i /data/video.mp4 -ar 44100 -filter:a dynaudnorm /data/video.mp3
+
+# Use OpenAI's Whiper to listen to the audio and create a transcript
+# Note, this runs as root in the Docker image and will produce files
+# that have root permissions.
+[ ! -f "video.srt" ] && docker run -v "$PWD:/audio" --rm -ti gencore/whisper-speech-to-text:latest video.mp3
+
+# Burn the subtitles onto the video
+# For this stage to work, we need to select a Docker image of ffmpeg that 
+# has the font configuration correctly installed. I found that the
+# linuxserver/ffmpeg image was missing basic fonts so ffmpeg could not 
+# render the fonts into the video stream. Thus we are using the 
+# Intel optimized version. This might be an issue for some users.
+[ ! -f "video-subtitle.mp4" ] && docker run --rm -it -v "$(pwd)":/data intel/intel-optimized-ffmpeg /opt/build/bin/ffmpeg -i /data/video.mp4 -vf subtitles=/data/video.srt -c:a copy /data/video-subtitle.mp4
+[ $(stat -c "%U" video-subtitle.mp4) != "$(whoami)" ] && sudo chown $(id -u):$(id -g) video-subtitle.mp4
+
+# Rename the video file
+NAME=$(echo "$INPUT" | rev | cut -d'.' -f2 | rev)
+mv video-subtitle.mp4 "$NAME.subtitle.mp4"
+
+# Cleanup the remaining artifacts as the task is complete.
+# Using sudo because some files have root permissions.
+sudo rm video.json video.mp3 video.mp4 video.srt video.tsv video.txt video.vtt

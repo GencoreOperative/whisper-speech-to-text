@@ -63,6 +63,7 @@ fi
 # Rename the video file
 NAME=$(echo "$INPUT" | rev | cut -d '.' -f 2- | rev)
 mv video-subtitle.mp4 "$NAME.subtitle.mp4"
+mv video.txt "$NAME.subtitle.txt"
 
 # Cleanup the remaining artifacts as the task is complete.
 rm video.json video.mp3 video.mp4 video.srt video.tsv video.vtt

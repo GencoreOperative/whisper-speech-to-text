@@ -1,3 +1,0 @@
-#!/bin/bash
-# Invoke the transcribe feature
-docker run -v "$PWD:/audio" --rm -ti gencore/whisper-speech-to-text:latest "$1"

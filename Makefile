@@ -8,7 +8,14 @@ all: build
 
 .PHONY: build
 
-build: buildTranscribe buildSubtitle
+build: buildBase buildTranscribe buildSubtitle
+
+buildBase:
+	@echo "Building Base Image"
+	docker build docker-base \
+		--tag $(project):$(pip-version) \
+		--tag $(project):$(git) \
+		--tag $(project):latest
 
 buildTranscribe: 
 	@echo "Building Transcribing Image"

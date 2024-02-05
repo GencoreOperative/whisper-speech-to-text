@@ -7,4 +7,4 @@ TARGET=$(echo "$INPUT" | rev | cut -d'.' -f2 | rev)-subtitle.mp4
 
 touch $TARGET
 touch audio.srt audio.txt
-docker run -v "$PWD:/audio" --rm -ti gencore/whisper-speech-to-text-subtitle:latest "$INPUT"
+docker run -v "$PWD:/audio" --rm -ti gencore/whisper-speech-to-text-subtitle:latest "$INPUT" true

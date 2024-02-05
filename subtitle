@@ -2,6 +2,7 @@
 
 # A script to both convert a given video file into a video file with subtitles.
 INPUT=$1
+[ ! -f "$INPUT" ] && echo "Provide an input audio/video file" && exit 1
 TARGET=$(echo "$INPUT" | rev | cut -d'.' -f2 | rev)-subtitle.mp4
 
 touch $TARGET

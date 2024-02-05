@@ -34,9 +34,14 @@ buildSubtitle:
 publish:
 	@echo "Pushing to DockerHub"
 	@sh utils/docker-login
-	docker push $(project)-subtitle:$(pip-version)
+	docker push $(project):$(pip-version)
+	docker push $(project):$(git)
+	docker push $(project):latest
+	
 	docker push $(project)-transcribe:$(pip-version)
-	docker push $(project)-subtitle:$(git)
 	docker push $(project)-transcribe:$(git)
-	docker push $(project)-subtitle:latest
 	docker push $(project)-transcribe:latest
+
+	docker push $(project)-subtitle:$(pip-version)
+	docker push $(project)-subtitle:$(git)
+	docker push $(project)-subtitle:latest

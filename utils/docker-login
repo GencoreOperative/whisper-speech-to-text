@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# A script to verify that the current user is logged into the the docker.io repository
+
+PATH=$HOME/.docker/config.json
+if [ ! -f $PATH ]; then
+    echo "No Docker configuration found"
+    exit 1
+fi
+
+if [ -z "$(/usr/bin/grep index.docker.io $PATH)" ]; then
+    echo "Not logged into docker.io. Please run 'docker login' before publishing"
+    exit 1
+fi
+
+exit 0

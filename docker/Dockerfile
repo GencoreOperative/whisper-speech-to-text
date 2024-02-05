@@ -17,4 +17,4 @@ RUN whisper counting.mp3 --model small --language English
 RUN mkdir /audio
 WORKDIR /audio
 
-ENTRYPOINT ["/opt/conda/bin/whisper", "--model", "small", "--language", "English", "--output_format", "txt"]
+ENTRYPOINT ["/opt/conda/bin/whisper", "--model", "small", "--language", "English", "--output_format", "all"]

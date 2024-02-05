@@ -1,0 +1,14 @@
+#!/bin/bash
+
+
+
+# A script to both convert a given video file into an MP4 and add subtitles.
+# The script is designed to be idempotent such that if it gets interrupted, it
+# can be run again and continue.
+
+INPUT=$1
+TARGET=$(echo "$INPUT" | rev | cut -d'.' -f2 | rev)-subtitle.mp4
+
+touch $TARGET
+touch audio.srt audio.txt
+docker run -v "$PWD:/audio" --rm -ti $(docker build docker2 -q) "$INPUT" $2

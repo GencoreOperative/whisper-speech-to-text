@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # A script to both convert a given video file into a video file with subtitles.
-INPUT=$1
+INPUT="$1"
 [ ! -f "$INPUT" ] && echo "Provide an input audio/video file" && exit 1
-TARGET=$(echo "$INPUT" | rev | cut -d'.' -f2 | rev)-subtitle.mp4
+TARGET="$(echo "$INPUT" | rev | cut -d'.' -f2 | rev)-subtitle.mp4"
 
-touch $TARGET
+touch "$TARGET"
 touch audio.srt audio.txt
 docker run -v "$PWD:/audio" --rm -ti gencore/whisper-speech-to-text-subtitle:latest "$INPUT"

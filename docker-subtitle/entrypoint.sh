@@ -47,7 +47,7 @@ for VIDEO_EXTENSION in "${VIDEO_EXTENSIONS[@]}"; do
 		# stream.
 
 		if [ ! -z "$MODE" ]; then
-			ffmpeg -i $SOURCE \
+			ffmpeg -i "$SOURCE" \
 				-y \
 				-vf subtitles=audio.srt \
 	    		-c:v libx264 \
@@ -58,11 +58,11 @@ for VIDEO_EXTENSION in "${VIDEO_EXTENSIONS[@]}"; do
 				-q:a 6 \
 				-filter:a dynaudnorm \
 				-c:s mov_text \
-	    		$TARGET			
+	    		"$TARGET"
 		else
 			# https://superuser.com/questions/700082/is-there-an-option-in-ffmpeg-to-specify-a-subtitle-track-that-should-be-shown-by
 			# Provided detail on the subtitle commands
-			ffmpeg -i $SOURCE \
+			ffmpeg -i "$SOURCE" \
 				-y \
 				-i audio.srt \
 				-c:v copy \
@@ -70,7 +70,7 @@ for VIDEO_EXTENSION in "${VIDEO_EXTENSIONS[@]}"; do
 				-c:s mov_text \
     			-metadata:s:s:0 language=eng \
     			-disposition:s:0 default \
-    			$TARGET
+    			"$TARGET"
 		fi
 
         break
